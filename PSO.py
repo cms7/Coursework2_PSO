@@ -4,9 +4,11 @@ import numpy as np
 from random import seed
 
 class PSO:
-    seed(1)        
-    size = int(input("Please enter swarmsize"))
-    swarm = [Particle(np.random.uniform(-1,1,2), np.random.rand(2),i) for i , x in enumerate(range(size))]
-    print(swarm[1].velocity)
+    
+    def __init__(self, swarmsize0,alpha,beta,gamma,inertia,num_informants):
+        Particle(np.random.rand(2),np.zeros(2),i)
+        
 
-optimize = PSO()
+
+
+
