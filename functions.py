@@ -9,6 +9,5 @@ def target(coordinates):
     global tar_x, tar_y
     return means_squared_error(coordinates,[tar_x,tar_y])
 
-def assess_fitness(particle):
+def assess_fitness(particle,target):
     return target(particle)
-

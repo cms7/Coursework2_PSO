@@ -1,32 +1,72 @@
-from random import random, seed
-from functions import assess_fitness
+import random
 import numpy as np
 
-class Particle:
-    
-    # initialise the particle
-    def __init__(self, position, velocity, particle_num):
-        self.position = position
-        self.velocity = velocity
-        self.id = particle_num
-        self.p_best = position
-        self.fitness = 1e7 # this is just a high number to begin with
+from functions import assess_fitness, target
 
-def current_best(swarm):
-    fitnessess = [assess_fitness(swarm[i].position) for i in swarm]
-    best_fitness = min(fitnessess)
-    best_id = fitnessess.index(best_fitness)
-    return swarm[best_id].position
-         
-# update function which will do one iteration for the particles movement
-def update_position(self,i_best,current):
-    alpha = 0.5
-    self.position += self.velocity
-    cognitive = random()
-    social = random()
-    self.velocity = (alpha*self.velocity) + cognitive*(self.p_best-self.position)+social*(i_best-self.position)
-    #fitness of this position 
-    cur_fitness = assess_fitness(current)
-    if(cur_fitness < self.fitness):
-        self.p_best = self.position
-    self.fitness = cur_fitness
+alpha = 0.5
+beta = 1
+gamma = 1
+delta = 1
+epsilon = 1
+
+class Particle:
+    def __init__(self, target, velocity, position, name):
+        self.velocity = velocity
+        self.position = position
+        self.p_best = position
+        self.id = name
+        self.target = target
+        self.prev_fit = np.inf
+
+    def assess_fitness(self):
+        return assess_fitness(self.position, self.target)
+    
+    def update(self, i_best, g_best):
+        self.position += self.velocity*epsilon
+        cognitive = random.uniform(0,beta)
+        social = random.uniform(0,gamma)
+        glob = random.uniform(0,delta)
+
+        self.velocity = (self.velocity*alpha)+cognitive*(self.p_best-self.position)+social*(i_best-self.position)+glob*(g_best-self.position)
+        
+        cur_fit = self.assess_fitness()
+        if(cur_fit < self.prev_fit):
+            self.p_best = self.position
+        self.prev_fit = cur_fit
+
+def find_best(swarm,target):
+    fitnesses = [assess_fitness(x.p_best,target) for x in swarm]
+    most_fit = min(fitnesses)
+    fittest_particle = fitnesses.index(most_fit)
+    return swarm[fittest_particle]
+
+class PSO:
+
+    def __init__(self,target,swarmsize,dimensions,num_informants):
+        self.target = target
+        self.swarmsize=swarmsize
+        self.num_informants = num_informants
+        self.swarm = [Particle(target, np.zeros(dimensions), np.random.rand(
+            dimensions), i) for i, x in enumerate(range(swarmsize))]
+        self.g_best = np.random.choice(self.swarm,1)[0]
+    
+    def update_swarm(self):
+        for particle in self.swarm:
+            informants = np.random.choice(self.swarm,self.num_informants)
+            if particle not in informants:
+                np.append(informants,particle)
+            i_best = find_best(informants,self.target)
+            particle.update(i_best,self.g_best)
+
+    def update_gbest(self):
+        most_fit = find_best(self.swarm, self.target)
+        g_best_fitness = self.g_best.assess_fitness()
+        if(most_fit.assess_fitness()<g_best_fitness):
+            self.g_best = most_fit
+
+    def improve(self):
+        self.update_swarm()
+        self.update_gbest()
+
+pso = PSO(target,6,2,2)
+pso.improve()
