@@ -1,9 +1,8 @@
 import random
 import numpy as np
-
 from functions import assess_fitness, target
 
-alpha = 0.5
+alpha = 0.1
 beta = 1
 gamma = 1
 delta = 1
@@ -27,7 +26,7 @@ class Particle:
         social = random.uniform(0,gamma)
         glob = random.uniform(0,delta)
 
-        self.velocity = (self.velocity*alpha)+cognitive*(self.p_best-self.position)+social*(i_best-self.position)+glob*(g_best-self.position)
+        self.velocity = (self.velocity*alpha+cognitive*(self.p_best-self.position)+social*(i_best.p_best-self.position)+glob*(g_best.p_best-self.position))
         
         cur_fit = self.assess_fitness()
         if(cur_fit < self.prev_fit):
@@ -64,9 +63,11 @@ class PSO:
         if(most_fit.assess_fitness()<g_best_fitness):
             self.g_best = most_fit
 
-    def improve(self):
-        self.update_swarm()
-        self.update_gbest()
+    def improve(self, epochs):
+        for i in range(epochs):
+            self.update_swarm()
+            self.update_gbest()
+            print(self.g_best.position)
 
-pso = PSO(target,6,2,2)
-pso.improve()
+pso = PSO(target,40,2,5)
+pso.improve(1000)
