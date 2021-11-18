@@ -1,24 +1,23 @@
 import random
 import numpy as np
-from functions import assess_fitness, target
+from functions import ackley, assess_fitness, beale, rastrigin
 
-alpha = 0.1
+alpha = 0.5
 beta = 1
 gamma = 1
 delta = 1
 epsilon = 1
 
 class Particle:
-    def __init__(self, target, velocity, position, name):
+    def __init__(self, velocity, position, name):
         self.velocity = velocity
         self.position = position
         self.p_best = position
         self.id = name
-        self.target = target
         self.prev_fit = np.inf
 
     def assess_fitness(self):
-        return assess_fitness(self.position, self.target)
+        return rastrigin(self.position)
     
     def update(self, i_best, g_best):
         self.position += self.velocity*epsilon
@@ -33,19 +32,18 @@ class Particle:
             self.p_best = self.position
         self.prev_fit = cur_fit
 
-def find_best(swarm,target):
-    fitnesses = [assess_fitness(x.p_best,target) for x in swarm]
+def find_best(swarm):
+    fitnesses = [assess_fitness(x.p_best) for x in swarm]
     most_fit = min(fitnesses)
     fittest_particle = fitnesses.index(most_fit)
     return swarm[fittest_particle]
 
 class PSO:
 
-    def __init__(self,target,swarmsize,dimensions,num_informants):
-        self.target = target
+    def __init__(self,swarmsize,dimensions,num_informants):
         self.swarmsize=swarmsize
         self.num_informants = num_informants
-        self.swarm = [Particle(target, np.zeros(dimensions), np.random.rand(
+        self.swarm = [Particle( np.zeros(dimensions), np.random.rand(
             dimensions), i) for i, x in enumerate(range(swarmsize))]
         self.g_best = np.random.choice(self.swarm,1)[0]
     
@@ -54,11 +52,11 @@ class PSO:
             informants = np.random.choice(self.swarm,self.num_informants)
             if particle not in informants:
                 np.append(informants,particle)
-            i_best = find_best(informants,self.target)
+            i_best = find_best(informants)
             particle.update(i_best,self.g_best)
 
     def update_gbest(self):
-        most_fit = find_best(self.swarm, self.target)
+        most_fit = find_best(self.swarm)
         g_best_fitness = self.g_best.assess_fitness()
         if(most_fit.assess_fitness()<g_best_fitness):
             self.g_best = most_fit
@@ -67,7 +65,9 @@ class PSO:
         for i in range(epochs):
             self.update_swarm()
             self.update_gbest()
-            print(self.g_best.position)
+            X = self.g_best.position[0]
+            Y = self.g_best.position[1]
+        print('Y = %f, X = %f' % (X, Y))
 
-pso = PSO(target,40,2,5)
-pso.improve(1000)
+pso = PSO(50,2,10)
+pso.improve(100)
