@@ -3,6 +3,22 @@ from numpy import array
 from random import random
 from math import sin, sqrt
 
+'''
+pso.py
+A simple implementation of the Particle Swarm Optimisation Algorithm.
+Uses Numpy for matrix operations. 
+Adapted from Pradeep Gowda 2009-03-16.
+This implementation optimises the Schaffer function (f6).
+It uses only global update. Informants are not used.
+It can be generalised by adding:
+- random or local informants and consider them when updating velocity
+- generate random numbers for each dimension and use them to weigh the terms  in the update equation
+To use it for training an ANN model, two things must be done:
+- set param to be the aray of all weights and biases of the ANN
+- replace f6 function by the loss functio of the ANN
+
+'''
+
 iter_max = 10000
 pop_size = 100
 dimensions = 2
