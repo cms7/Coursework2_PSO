@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from functions import ackley, assess_fitness, beale, rastrigin
+from functions import ackley, assess_fitness, beale, rastrigin, squared_error
 
 alpha = 0.5
 beta = 1
@@ -34,7 +34,7 @@ class Particle:
 
 def find_best(swarm):
     fitnesses = [assess_fitness(x.p_best) for x in swarm]
-    most_fit = min(fitnesses)
+    most_fit = np.min(fitnesses)
     fittest_particle = fitnesses.index(most_fit)
     return swarm[fittest_particle]
 

@@ -31,11 +31,11 @@ class PSO:
         for i in range(epochs):
             self.update_swarm()
             self.update_gbest()
-            B = assess_fitness(self.g_best.position)
             X = self.g_best.position[0]
             Y = self.g_best.position[1]
             print('Epoch = %i, Y = %f, X = %f ' % (i,X,Y))
     
 seed(1)
-pso = PSO(100,2,10)
-pso.improve(100)
+
+#pso = PSO(100,2,10)
+#pso.improve(100)
