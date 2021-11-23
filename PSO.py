@@ -54,6 +54,8 @@ class PSO:
         fit = list()
         epochlol = list(range(1, 101))
         '''''''''
+        # this will iterate the swarm for a set number of epochs 
+        # and print out the best position for optimum
         for i in range(epochs):
             self.iterate_swarm()
             self.find_new_gbest()
