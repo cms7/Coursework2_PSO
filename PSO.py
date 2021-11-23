@@ -1,9 +1,8 @@
 from Particle import Particle
 import numpy as np
-from Particle import find_best
-from functions import assess_fitness
+from Particle import find_best_in_swarm
 from random import seed
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 class PSO:
 
@@ -19,33 +18,38 @@ class PSO:
             informants = np.random.choice(self.swarm,self.num_informants)
             if particle not in informants:
                 np.append(informants,particle)
-            i_best = find_best(informants)
-            particle.update(i_best,self.g_best)
+            i_best = find_best_in_swarm(informants)
+            particle.move_particle(i_best,self.g_best)
 
     def update_gbest(self):
-        most_fit = find_best(self.swarm)
-        g_best_fitness = self.g_best.assess_fitness()
-        if(most_fit.assess_fitness()<g_best_fitness):
+        most_fit = find_best_in_swarm(self.swarm)
+        g_best_fitness = self.g_best.get_fitness()
+        if(most_fit.get_fitness()<g_best_fitness):
             self.g_best = most_fit
         
 
     def improve(self, epochs):
+        '''''''''
         fit = list()
         epochlol = list(range(1, 101))
+        '''''''''
         for i in range(epochs):
             self.update_swarm()
             self.update_gbest()
-            fit.append(self.g_best.prev_fit)
+            #fit.append(self.g_best.prev_fit)
             X = self.g_best.position[0]
             Y = self.g_best.position[1]
-            #print('Epoch = %i, Y = %f, X = %f ' % (i,X,Y))
+            print('Epoch = %i, Y = %f, X = %f ' % (i,X,Y))
+        ''''''''''''''''''''''''''''''''''''''''
+        uncomment this section to see plots along with the import
+
         plt.plot(epochlol, fit)
         plt.xlabel('Iterations')
         plt.ylabel('Fitness')
         plt.title('Assessing overall values fitness')
         plt.grid()
         plt.show()
-        
+        '''''''''''''''''''''''''''''''''''''''''
 seed(1)
 
 pso = PSO(100,2,6)
